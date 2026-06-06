@@ -1,496 +1,1075 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Quantum Atlas | Professional Physics Learning Suite</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Inter', 'Space Grotesk', sans-serif;
-      transition: background 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1), color 0.3s ease;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    /* ===== PREMIUM THEME SYSTEMS ===== */
-    body.theme-quantum {
-      background: radial-gradient(ellipse at 20% 30%, #0a0c1a 0%, #02040f 100%);
-      color: #eef5ff;
-    }
-    body.theme-quantum .glass-card, body.theme-quantum .sim-panel, 
-    body.theme-quantum .graph-card, body.theme-quantum .topic-card,
-    body.theme-quantum .hero, body.theme-quantum .stat-card {
-      background: rgba(10, 20, 40, 0.65);
-      backdrop-filter: blur(18px);
-      border: 1px solid rgba(0, 200, 255, 0.25);
-    }
-
-    body.theme-obsidian {
-      background: linear-gradient(145deg, #0a0a0a 0%, #121212 100%);
-      color: #e0e0e0;
-    }
-    body.theme-obsidian .glass-card, body.theme-obsidian .sim-panel, 
-    body.theme-obsidian .graph-card, body.theme-obsidian .topic-card,
-    body.theme-obsidian .hero {
-      background: rgba(20, 20, 30, 0.7);
-      backdrop-filter: blur(18px);
-      border: 1px solid rgba(100, 100, 150, 0.3);
-    }
-
-    body.theme-cosmic {
-      background: radial-gradient(circle at 70% 10%, #0f0c29, #1a1a3e, #0b0b1a);
-      color: #d9d9ff;
-    }
-    body.theme-cosmic .glass-card, body.theme-cosmic .sim-panel, 
-    body.theme-cosmic .graph-card, body.theme-cosmic .topic-card,
-    body.theme-cosmic .hero {
-      background: rgba(25, 20, 55, 0.7);
-      backdrop-filter: blur(18px);
-      border: 1px solid rgba(140, 120, 255, 0.4);
-    }
-
-    body.theme-aurora {
-      background: linear-gradient(125deg, #0a2a2a 0%, #0e3a3a 50%, #0a2a2a 100%);
-      color: #d4f1f9;
-    }
-    body.theme-aurora .glass-card, body.theme-aurora .sim-panel, 
-    body.theme-aurora .graph-card, body.theme-aurora .topic-card,
-    body.theme-aurora .hero {
-      background: rgba(20, 55, 65, 0.65);
-      backdrop-filter: blur(18px);
-      border: 1px solid rgba(0, 230, 200, 0.4);
-    }
-
-    /* floating energy orbs */
-    .orb {
-      position: fixed;
-      border-radius: 50%;
-      filter: blur(90px);
-      pointer-events: none;
-      z-index: 0;
-      transition: 0.5s;
-    }
-    body.theme-quantum .orb1 { width: 65vw; height: 65vw; background: radial-gradient(circle, rgba(0,150,255,0.2), transparent); top: -25vh; right: -15vw; }
-    body.theme-obsidian .orb1 { width: 60vw; height: 60vw; background: radial-gradient(circle, rgba(80,80,120,0.2), transparent); }
-    body.theme-cosmic .orb1 { width: 70vw; height: 70vw; background: radial-gradient(circle, rgba(120,80,255,0.18), transparent); }
-    body.theme-aurora .orb1 { width: 60vw; height: 60vw; background: radial-gradient(circle, rgba(0,230,210,0.18), transparent); }
-
-    .container {
-      position: relative;
-      z-index: 2;
-      max-width: 1500px;
-      margin: 0 auto;
-      padding: 1.5rem 2rem;
-    }
-
-    /* premium header */
-    .hero {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 1.5rem;
-      margin-bottom: 2rem;
-      padding: 1.2rem 2rem;
-      border-radius: 2rem;
-      backdrop-filter: blur(18px);
-    }
-    .logo-area h1 {
-      font-family: 'Space Grotesk', monospace;
-      font-size: 2.5rem;
-      font-weight: 700;
-      background: linear-gradient(125deg, #fff, #4ac7ff, #c084fc);
-      background-clip: text;
-      -webkit-background-clip: text;
-      color: transparent;
-      letter-spacing: -0.02em;
-    }
-    .euler-identity {
-      font-family: monospace;
-      font-size: 0.9rem;
-      background: rgba(0,0,0,0.35);
-      padding: 0.3rem 1rem;
-      border-radius: 40px;
-      display: inline-block;
-      margin-top: 6px;
-    }
-    .stats-row {
-      display: flex;
-      gap: 1rem;
-    }
-    .stat-badge {
-      background: rgba(0,0,0,0.3);
-      border-radius: 40px;
-      padding: 0.4rem 1rem;
-      font-size: 0.8rem;
-      font-weight: 500;
-    }
-    .theme-palette {
-      display: flex;
-      gap: 12px;
-      background: rgba(0,0,0,0.3);
-      backdrop-filter: blur(12px);
-      padding: 6px 18px;
-      border-radius: 60px;
-    }
-    .theme-dot {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      cursor: pointer;
-      transition: 0.2s;
-      border: 2px solid rgba(255,255,255,0.6);
-    }
-    .theme-dot:hover { transform: scale(1.12); }
-    .dot-quantum { background: linear-gradient(135deg, #0f2a5e, #1a3a7a); }
-    .dot-obsidian { background: linear-gradient(135deg, #2a2a2a, #1a1a1a); }
-    .dot-cosmic { background: linear-gradient(135deg, #3a2a6e, #1e1a4a); }
-    .dot-aurora { background: linear-gradient(135deg, #0f5c6b, #0a4a5a); }
-
-    /* main grid */
-    .dashboard {
-      display: grid;
-      grid-template-columns: 1fr 400px;
-      gap: 2rem;
-    }
-
-    .glass-card, .graph-card, .sim-panel, .topic-card {
-      border-radius: 2rem;
-      transition: all 0.3s;
-      box-shadow: 0 20px 35px -12px rgba(0,0,0,0.4);
-    }
-    .graph-card {
-      padding: 1.5rem;
-      margin-bottom: 2rem;
-    }
-    .graph-header {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 1rem;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-    canvas {
-      max-height: 280px;
-      width: 100%;
-      border-radius: 1.2rem;
-      background: rgba(0,0,0,0.25);
-      padding: 0.4rem;
-    }
-    .graph-toolbar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.8rem;
-      margin-top: 1rem;
-      align-items: center;
-    }
-    select, input {
-      background: rgba(15, 25, 45, 0.8);
-      border: 1px solid rgba(100, 180, 250, 0.5);
-      border-radius: 2rem;
-      padding: 0.6rem 1.2rem;
-      color: inherit;
-      font-weight: 500;
-      outline: none;
-      font-size: 0.85rem;
-    }
-    button {
-      background: linear-gradient(95deg, #2c7da0, #9b59b6);
-      border: none;
-      border-radius: 2rem;
-      padding: 0.6rem 1.4rem;
-      font-weight: 600;
-      color: white;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    button:hover { transform: scale(0.97); opacity: 0.9; }
-
-    .topics-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-      gap: 1rem;
-      max-height: 480px;
-      overflow-y: auto;
-      padding-right: 5px;
-    }
-    .topic-card {
-      padding: 1rem 1.2rem;
-      cursor: pointer;
-      border-left: 4px solid #2c7da0;
-      transition: 0.2s;
-    }
-    .topic-card:hover { transform: translateX(6px); background: rgba(44,125,160,0.25); }
-    .topic-card.active { background: rgba(44,125,160,0.4); border-left: 4px solid cyan; }
-
-    .sim-panel {
-      padding: 1.6rem;
-      position: sticky;
-      top: 1rem;
-    }
-    .formula-glow {
-      background: rgba(0,0,0,0.35);
-      border-radius: 1.2rem;
-      padding: 1rem;
-      text-align: center;
-      font-family: monospace;
-      font-size: 1rem;
-      margin: 1rem 0;
-      border: 1px solid #2c7da0;
-    }
-    .result-glass {
-      background: rgba(0,0,0,0.3);
-      border-radius: 1.2rem;
-      padding: 1rem;
-      margin-top: 1rem;
-      font-weight: 500;
-    }
-    input { width: 100%; margin: 8px 0; }
-
-    @media (max-width: 1050px) {
-      .dashboard { grid-template-columns: 1fr; }
-      .sim-panel { position: relative; margin-top: 1rem; }
-    }
-    footer {
-      margin-top: 3rem;
-      text-align: center;
-      font-size: 0.75rem;
-      opacity: 0.7;
-      padding: 1.5rem;
-      border-top: 1px solid rgba(255,255,255,0.1);
-    }
-    .premium-badge {
-      font-size: 0.7rem;
-      background: rgba(44,125,160,0.3);
-      border-radius: 40px;
-      padding: 0.2rem 0.8rem;
-      display: inline-block;
-    }
-    ::-webkit-scrollbar { width: 4px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #2c7da0; border-radius: 10px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏭 CAI - Factory Builder | Ultimate Animations Edition</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --bg-primary: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            --bg-secondary: #f0f4f8;
+            --card-bg: rgba(255,255,255,0.95);
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --primary: #1e3c72;
+            --primary-dark: #0f2b4f;
+            --shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.02);
+            --accent: #ff6b6b;
+            --recurring-bg: #dbeafe;
+            --recurring-text: #1e40af;
+            --one-time-bg: #fef3c7;
+            --one-time-text: #92400e;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+        
+        body[data-theme="dark"] {
+            --bg-primary: linear-gradient(135deg, #0f0c29, #1a1a3e, #24243e);
+            --bg-secondary: #1e293b;
+            --card-bg: rgba(30,41,59,0.95);
+            --text: #f1f5f9;
+            --text-light: #94a3b8;
+            --border: #334155;
+            --primary: #8b5cf6;
+            --primary-dark: #7c3aed;
+            --accent: #f97316;
+        }
+        
+        body[data-theme="ocean"] {
+            --bg-primary: linear-gradient(135deg, #0093e9 0%, #80d0c7 100%);
+            --bg-secondary: #e0f2fe;
+            --card-bg: rgba(255,255,255,0.95);
+            --text: #0c4a6e;
+            --text-light: #475569;
+            --border: #bae6fd;
+            --primary: #0284c7;
+            --primary-dark: #0369a1;
+            --accent: #14b8a6;
+        }
+        
+        body[data-theme="forest"] {
+            --bg-primary: linear-gradient(135deg, #134e5e 0%, #71b280 100%);
+            --bg-secondary: #ecfdf5;
+            --card-bg: rgba(255,255,255,0.95);
+            --text: #064e3b;
+            --text-light: #475569;
+            --border: #a7f3d0;
+            --primary: #059669;
+            --primary-dark: #047857;
+            --accent: #f59e0b;
+        }
+        
+        body[data-theme="sunset"] {
+            --bg-primary: linear-gradient(135deg, #f12711 0%, #f5af19 100%);
+            --bg-secondary: #fff7ed;
+            --card-bg: rgba(255,255,255,0.95);
+            --text: #7c2d12;
+            --text-light: #57534e;
+            --border: #fed7aa;
+            --primary: #ea580c;
+            --primary-dark: #c2410c;
+            --accent: #8b5cf6;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text);
+            transition: all 0.3s ease;
+            min-height: 100vh;
+            animation: bgPulse 10s ease infinite;
+        }
+        
+        @keyframes bgPulse {
+            0%, 100% { background-size: 100% 100%; }
+            50% { background-size: 120% 120%; }
+        }
+        
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; animation: fadeIn 0.8s ease-out; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Animated Header */
+        .header { 
+            background: var(--card-bg); 
+            backdrop-filter: blur(10px); 
+            border-radius: 24px; 
+            padding: 20px 25px; 
+            margin-bottom: 25px; 
+            box-shadow: var(--shadow); 
+            border: 1px solid rgba(255,255,255,0.2);
+            animation: slideDown 0.6s ease-out;
+            transition: all 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .header:hover { transform: translateY(-2px); box-shadow: 0 25px 35px -12px rgba(0,0,0,0.2); }
+        
+        .header-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .logo h1 { 
+            font-size: 1.6rem; 
+            background: linear-gradient(135deg, var(--primary), var(--accent)); 
+            -webkit-background-clip: text; 
+            background-clip: text; 
+            color: transparent;
+            animation: shimmer 3s infinite;
+        }
+        
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .logo p { font-size: 0.7rem; color: var(--text-light); margin-top: 3px; }
+        
+        .theme-selector { display: flex; gap: 10px; flex-wrap: wrap; }
+        .theme-option { 
+            width: 35px; 
+            height: 35px; 
+            border-radius: 50%; 
+            cursor: pointer; 
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55); 
+            border: 2px solid transparent; 
+        }
+        .theme-option:hover { transform: scale(1.2) rotate(10deg); }
+        .theme-option.active { border-color: var(--text); transform: scale(1.15); box-shadow: 0 0 15px rgba(0,0,0,0.2); }
+        
+        .lang-btn { 
+            padding: 6px 15px; 
+            border-radius: 40px; 
+            border: 1px solid var(--border); 
+            background: var(--bg-secondary); 
+            color: var(--text); 
+            cursor: pointer; 
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+        .lang-btn:hover { transform: translateY(-2px); background: var(--primary); color: white; }
+        .lang-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        
+        .stats { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin: 15px 0 20px; }
+        .stat-badge { 
+            background: var(--card-bg); 
+            backdrop-filter: blur(5px); 
+            padding: 4px 12px; 
+            border-radius: 40px; 
+            font-size: 0.65rem; 
+            border: 1px solid rgba(255,255,255,0.3); 
+            color: var(--text);
+            transition: all 0.3s ease;
+            animation: badgeFloat 3s ease-in-out infinite;
+            animation-delay: calc(var(--i, 0) * 0.1s);
+        }
+        
+        @keyframes badgeFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-3px); }
+        }
+        
+        .stat-badge:hover { transform: scale(1.05); background: var(--primary); color: white; }
+        
+        .search-bar { margin-bottom: 20px; }
+        .search-bar input { 
+            width: 100%; 
+            padding: 12px 20px; 
+            border-radius: 50px; 
+            border: 1px solid rgba(255,255,255,0.2); 
+            background: var(--card-bg); 
+            color: var(--text); 
+            font-size: 0.85rem; 
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+        .search-bar input:focus { 
+            outline: none; 
+            border-color: var(--primary); 
+            box-shadow: 0 0 0 3px var(--primary)20;
+            transform: scale(1.01);
+        }
+        
+        .expense-card { 
+            background: var(--card-bg); 
+            backdrop-filter: blur(10px); 
+            border-radius: 24px; 
+            padding: 20px; 
+            margin-bottom: 25px; 
+            box-shadow: var(--shadow); 
+            border: 1px solid rgba(255,255,255,0.2);
+            animation: cardRise 0.5s ease-out;
+            transition: all 0.3s ease;
+        }
+        
+        @keyframes cardRise {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .expense-card:hover { transform: translateY(-3px); box-shadow: 0 20px 30px -10px rgba(0,0,0,0.2); }
+        
+        .expense-card h2 { font-size: 1.2rem; margin-bottom: 15px; color: var(--primary); display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        
+        .expense-form { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+        .expense-form input, .expense-form select { 
+            padding: 8px 12px; 
+            border: 1px solid var(--border); 
+            border-radius: 12px; 
+            background: var(--bg-secondary); 
+            color: var(--text); 
+            flex: 1; 
+            min-width: 100px; 
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+        .expense-form input:focus, .expense-form select:focus { 
+            outline: none; 
+            border-color: var(--primary); 
+            box-shadow: 0 0 0 2px var(--primary)30;
+            transform: scale(1.01);
+        }
+        .expense-form button { 
+            background: var(--primary); 
+            color: white; 
+            border: none; 
+            padding: 8px 16px; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            font-weight: 500; 
+            font-size: 0.8rem; 
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            position: relative;
+            overflow: hidden;
+        }
+        .expense-form button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+        .expense-form button:hover::before { left: 100%; }
+        .expense-form button:hover { 
+            transform: translateY(-2px) scale(1.02); 
+            box-shadow: 0 5px 15px var(--primary)50;
+        }
+        
+        .clear-btn { 
+            background: #ef4444; 
+            color: white; 
+            border: none; 
+            padding: 8px 16px; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            font-weight: 500; 
+            font-size: 0.8rem; 
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+        .clear-btn:hover { background: #dc2626; transform: scale(1.02); animation: shake 0.5s ease; }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-3px); }
+            75% { transform: translateX(3px); }
+        }
+        
+        .expense-type-badge { 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 4px; 
+            padding: 3px 8px; 
+            border-radius: 20px; 
+            font-size: 0.6rem; 
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .expense-type-badge:hover { transform: scale(1.05); }
+        
+        .expense-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+        .stat { 
+            background: var(--bg-secondary); 
+            padding: 12px; 
+            border-radius: 16px; 
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            cursor: pointer;
+        }
+        .stat:hover { 
+            transform: translateY(-5px) scale(1.02); 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .stat .value { 
+            font-size: 1.3rem; 
+            font-weight: bold; 
+            color: var(--primary);
+            transition: all 0.5s ease;
+        }
+        .stat .label { font-size: 0.65rem; color: var(--text-light); margin-top: 3px; }
+        
+        .recurring-summary { 
+            background: var(--bg-secondary); 
+            border-radius: 16px; 
+            padding: 12px; 
+            margin-bottom: 20px;
+            animation: fadeInUp 0.5s ease;
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .recurring-items { display: flex; flex-wrap: wrap; gap: 6px; max-height: 80px; overflow-y: auto; }
+        .recurring-item { 
+            background: var(--card-bg); 
+            padding: 4px 10px; 
+            border-radius: 20px; 
+            font-size: 0.65rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .recurring-item:hover { transform: translateX(3px) scale(1.02); }
+        
+        .charts { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .chart-box { 
+            background: var(--bg-secondary); 
+            padding: 12px; 
+            border-radius: 16px; 
+            text-align: center;
+            transition: all 0.3s ease;
+            animation: chartFade 0.8s ease-out;
+        }
+        
+        @keyframes chartFade {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .chart-box:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        canvas { max-height: 180px; width: 100%; transition: all 0.3s ease; }
+        
+        .expense-table { width: 100%; border-collapse: collapse; font-size: 0.7rem; }
+        .expense-table th, .expense-table td { padding: 8px; text-align: left; border-bottom: 1px solid var(--border); transition: all 0.2s ease; }
+        .expense-table tr:hover td { background: var(--bg-secondary); }
+        .delete-btn { 
+            background: #ef4444; 
+            color: white; 
+            border: none; 
+            padding: 3px 8px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-size: 0.65rem;
+            transition: all 0.3s ease;
+        }
+        .delete-btn:hover { transform: scale(1.05); background: #dc2626; }
+        
+        .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .tool { 
+            background: var(--card-bg); 
+            backdrop-filter: blur(10px); 
+            border-radius: 20px; 
+            padding: 18px; 
+            border: 1px solid rgba(255,255,255,0.2); 
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            animation: toolFade 0.6s ease-out;
+            animation-fill-mode: both;
+        }
+        
+        @keyframes toolFade {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .tool:nth-child(1) { animation-delay: 0.05s; }
+        .tool:nth-child(2) { animation-delay: 0.1s; }
+        .tool:nth-child(3) { animation-delay: 0.15s; }
+        .tool:nth-child(4) { animation-delay: 0.2s; }
+        .tool:nth-child(5) { animation-delay: 0.25s; }
+        
+        .tool:hover { 
+            transform: translateY(-8px) scale(1.01); 
+            box-shadow: 0 20px 30px -10px rgba(0,0,0,0.2);
+        }
+        
+        .tool h3 { font-size: 0.9rem; margin-bottom: 12px; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+        .tool-inputs { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+        .tool-inputs input, .tool-inputs select { 
+            padding: 8px 12px; 
+            border: 1px solid var(--border); 
+            border-radius: 10px; 
+            background: var(--bg-secondary); 
+            color: var(--text); 
+            font-size: 0.75rem;
+            transition: all 0.3s ease;
+        }
+        .tool-inputs input:focus, .tool-inputs select:focus { 
+            outline: none; 
+            border-color: var(--primary); 
+            transform: translateX(3px);
+        }
+        
+        .tool-buttons { display: flex; gap: 8px; }
+        .btn-view { 
+            flex: 1; 
+            background: var(--primary); 
+            color: white; 
+            border: none; 
+            padding: 8px; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            font-weight: 500; 
+            font-size: 0.75rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-view::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+        .btn-view:hover::before { left: 100%; }
+        .btn-view:hover { transform: translateY(-2px); box-shadow: 0 5px 10px var(--primary)50; }
+        
+        .btn-pdf { 
+            flex: 1; 
+            background: #ef4444; 
+            color: white; 
+            border: none; 
+            padding: 8px; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            font-weight: 500; 
+            font-size: 0.75rem;
+            transition: all 0.3s ease;
+        }
+        .btn-pdf:hover { transform: translateY(-2px); box-shadow: 0 5px 10px #ef444450; }
+        
+        .tool-result { 
+            margin-top: 10px; 
+            padding: 10px; 
+            background: var(--bg-secondary); 
+            border-radius: 10px; 
+            font-size: 0.7rem; 
+            border-left: 3px solid var(--primary); 
+            white-space: pre-wrap; 
+            max-height: 120px; 
+            overflow-y: auto;
+            transition: all 0.3s ease;
+        }
+        .tool-result:hover { background: var(--bg-secondary); transform: translateX(3px); }
+        
+        .share-row { display: flex; gap: 8px; margin-top: 8px; }
+        .share-wa, .share-print { 
+            flex: 1; 
+            padding: 5px; 
+            border-radius: 8px; 
+            font-size: 0.65rem; 
+            cursor: pointer; 
+            border: none;
+            transition: all 0.3s ease;
+        }
+        .share-wa { background: #25D366; color: white; }
+        .share-print { background: #6c757d; color: white; }
+        .share-wa:hover, .share-print:hover { transform: translateY(-2px); filter: brightness(1.05); }
+        
+        .footer { 
+            text-align: center; 
+            padding: 15px; 
+            font-size: 0.65rem; 
+            color: var(--text-light); 
+            border-top: 1px solid var(--border); 
+            margin-top: 20px;
+            animation: fadeIn 1s ease;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .pulse { animation: pulse 2s infinite; }
+        
+        @media (max-width: 800px) {
+            .tools-grid { grid-template-columns: 1fr; }
+            .charts { grid-template-columns: 1fr; }
+            .expense-stats { grid-template-columns: repeat(2, 1fr); }
+            .header-top { flex-direction: column; text-align: center; }
+        }
+    </style>
 </head>
-<body class="theme-quantum">
-<div class="orb orb1"></div>
+<body data-theme="light">
 <div class="container">
-  <div class="hero">
-    <div class="logo-area">
-      <h1><i class="fas fa-atom"></i> QUANTUM ATLAS</h1>
-      <div class="euler-identity">
-        <i class="fas fa-infinity"></i> \( e^{i\pi} + 1 = 0 \) — The Universe in an Equation
-      </div>
-      <div style="font-size:0.75rem; margin-top:4px;">Professional Physics Learning Suite | 150+ Interactive Modules</div>
-    </div>
-    <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
-      <div class="stats-row">
-        <div class="stat-badge"><i class="fas fa-chart-line"></i> 70+ Graphs</div>
-        <div class="stat-badge"><i class="fas fa-microscope"></i> 150+ Topics</div>
-        <div class="stat-badge"><i class="fas fa-sliders-h"></i> Real-time</div>
-      </div>
-      <div class="theme-palette">
-        <div class="theme-dot dot-quantum" data-theme="quantum" title="Quantum Blue"></div>
-        <div class="theme-dot dot-obsidian" data-theme="obsidian" title="Obsidian Dark"></div>
-        <div class="theme-dot dot-cosmic" data-theme="cosmic" title="Cosmic Violet"></div>
-        <div class="theme-dot dot-aurora" data-theme="aurora" title="Aurora Teal"></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="dashboard">
-    <div>
-      <div class="graph-card">
-        <div class="graph-header">
-          <span><i class="fas fa-waveform"></i> <strong>Dynamic Physics Engine</strong> | 70+ Waveforms & Oscillations</span>
-          <span class="premium-badge"><i class="fas fa-chart-simple"></i> realtime morph</span>
+    <div class="header">
+        <div class="header-top">
+            <div class="logo">
+                <h1>🏭 CAI - Factory Builder Platform</h1>
+                <p>Chartered Accountant Intelligence | Ultimate Animations | Unique Colors for Every Expense</p>
+            </div>
+            <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
+                <div class="theme-selector">
+                    <div class="theme-option active" data-theme="light"></div>
+                    <div class="theme-option" data-theme="dark"></div>
+                    <div class="theme-option" data-theme="ocean"></div>
+                    <div class="theme-option" data-theme="forest"></div>
+                    <div class="theme-option" data-theme="sunset"></div>
+                </div>
+                <div class="lang-bar"><button class="lang-btn active" data-lang="en">EN</button><button class="lang-btn" data-lang="hi">हिंदी</button></div>
+            </div>
         </div>
-        <canvas id="masterGraphCanvas" width="800" height="270"></canvas>
-        <div class="graph-toolbar">
-          <select id="graphModeSelect" class="glass-select">
-            <option value="shm">🌀 Simple Harmonic Motion</option><option value="damped">📉 Damped Oscillation</option>
-            <option value="wave_packet">🌊 Wave Packet</option><option value="dist_const">📏 Linear Motion</option>
-            <option value="dist_acc">🚀 Accelerated Fall</option><option value="energy_spring">⚖️ Spring Energy</option>
-            <option value="projectile">🎯 Projectile Arc</option><option value="cooling">🌡️ Newton's Cooling</option>
-            <option value="gravity_inv">🌍 Inverse Square Law</option><option value="decay">☢️ Radioactive Decay</option>
-            <option value="relativistic">⏱️ Relativistic Gamma</option><option value="kepler">🪐 Kepler's Orbit</option>
-            <option value="quantum_prob">⚛️ Quantum Tunneling</option><option value="schrodinger">🐈 Schrödinger Wave</option>
-          </select>
-          <input type="range" id="morphSlider" min="0" max="100" value="45" style="width: 180px;">
-          <span id="sliderLabel" style="font-size:0.8rem;">λ = 0.45</span>
-          <button id="refreshGraphBtn"><i class="fas fa-sync-alt"></i> Render</button>
+        <div class="stats">
+            <span class="stat-badge" style="--i:0">🏗️ Land & Site</span>
+            <span class="stat-badge" style="--i:1">📋 Approvals</span>
+            <span class="stat-badge" style="--i:2">🏭 Construction</span>
+            <span class="stat-badge" style="--i:3">⚡ Power</span>
+            <span class="stat-badge" style="--i:4">💧 Utilities</span>
+            <span class="stat-badge" style="--i:5">🔧 Machinery</span>
+            <span class="stat-badge" style="--i:6">📦 Materials</span>
+            <span class="stat-badge" style="--i:7">👥 Labour</span>
+            <span class="stat-badge" style="--i:8">🔬 Quality</span>
+            <span class="stat-badge" style="--i:9">🛡️ Safety</span>
+            <span class="stat-badge" style="--i:10">🌱 Environment</span>
+            <span class="stat-badge" style="--i:11">💡 R&D</span>
+            <span class="stat-badge" style="--i:12">📢 Marketing</span>
+            <span class="stat-badge" style="--i:13">💰 Finance</span>
+            <span class="stat-badge" style="--i:14">📌 Misc</span>
         </div>
-        <div style="font-size:0.7rem; margin-top: 10px; text-align:center; opacity:0.8;">✨ adjust slider → infinite parameter space • each mode reveals unique physics behavior</div>
-      </div>
-
-      <h3 style="margin: 1rem 0 1rem 0;"><i class="fas fa-crown"></i> Quantum Atlas Core Library | 150+ Physics Modules</h3>
-      <div class="topics-grid" id="topicsGridContainer"></div>
+        <div class="search-bar"><input type="text" id="searchTools" placeholder="🔍 Search 50+ tools... (Tax, EMI, GST, NDA, PF, Inventory, etc.)"></div>
     </div>
 
-    <div class="sim-panel" id="simulationPanel">
-      <h3><i class="fas fa-brain"></i> Interactive Simulation Core</h3>
-      <div id="dynamicLabCore">
-        <div class="formula-glow">✨ \( E = mc^2 \) • \( \hat{H}\psi = E\psi \) • \( F = ma \)</div>
-        <div style="margin: 1rem 0">Select any physics theme → unlock real-time calculator, dynamic formulas, and interactive variables.</div>
-        <div class="result-glass"><i class="fas fa-microchip"></i> 250+ configurable parameters • enterprise-grade physics engine</div>
-      </div>
+    <!-- Expense Section - Factory Builder Focus -->
+    <div class="expense-card">
+        <h2>🏭 FACTORY BUILDER EXPENSE MANAGER (Each Option Has UNIQUE COLOR)</h2>
+        
+        <div class="expense-form">
+            <input type="text" id="expDesc" placeholder="Expense Description">
+            <input type="text" id="expAmount" placeholder="Amount (₹)">
+            <select id="expType">
+                <option value="one-time">🔹 One-time Expense (Capital)</option>
+                <option value="recurring">🔄 Recurring Expense (Monthly)</option>
+            </select>
+            <select id="expCat">
+                <option value="" disabled selected>-- Select expense category (each has unique color) --</option>
+            </select>
+            <button id="addExpenseBtn" class="pulse">+ Add Factory Expense</button>
+        </div>
+        
+        <div style="display: flex; justify-content: flex-end;">
+            <button class="clear-btn" id="clearExpensesBtn">🗑️ Clear All Expenses</button>
+        </div>
+        
+        <div class="expense-stats">
+            <div class="stat"><div class="value" id="totalExpenses">₹0</div><div class="label">Total Factory Investment</div></div>
+            <div class="stat"><div class="value" id="monthlyAvg">₹0</div><div class="label">Monthly Operational Cost</div></div>
+            <div class="stat"><div class="value" id="topCategory">-</div><div class="label">Top Expense Category</div></div>
+            <div class="stat"><div class="value" id="transactionCount">0</div><div class="label">Total Transactions</div></div>
+        </div>
+        
+        <div class="recurring-summary" id="recurringSummary" style="display:none;">
+            <h3>🔄 Monthly Recurring Operational Expenses</h3>
+            <div class="recurring-items" id="recurringItems"></div>
+            <div style="margin-top: 6px; font-size: 0.75rem;"><strong>Total Monthly: ₹<span id="totalRecurring">0</span></strong> | Yearly: ₹<span id="yearlyRecurring">0</span></div>
+        </div>
+        
+        <div class="charts">
+            <div class="chart-box"><canvas id="trendChart"></canvas><div style="margin-top:5px; font-size:0.65rem;">📈 30-Day Expense Trend</div></div>
+            <div class="chart-box"><canvas id="categoryChart"></canvas><div style="margin-top:5px; font-size:0.65rem;">🥧 Unique Colors for Every Expense</div></div>
+        </div>
+        
+        <div id="expensesList" style="max-height: 250px; overflow-y: auto;"></div>
     </div>
-  </div>
-  <footer><i class="fas fa-chart-line"></i> QUANTUM ATLAS — Professional Grade • 4 Premium Themes • 150+ Interactive Topics • 70+ Graph Archetypes • Infinite Parameter Morphing • Built for Physics Wallah Standard</footer>
+
+    <div id="toolsContainer"></div>
+    <div class="footer">🏭 CAI - Factory Builder | Every expense head has its own UNIQUE COLOR | Ultimate Animations | Made in India 🇮🇳</div>
 </div>
 
 <script>
-  // =============== PROFESSIONAL 150+ PHYSICS MODULES ===============
-  const corePhysicsModules = [
-    { id: "shm_topic", name: "🌀 Simple Harmonic Motion", desc: "x = A·cos(ωt)", formula: "x(t) = A cos(ωt + φ)", vars: [{label:"Amplitude (m)",key:"A",def:2.5},{label:"Angular Frequency ω",key:"w",def:3.2}], compute: (v)=>`Max Velocity = ${(v.A * v.w).toFixed(2)} m/s | Max Accel = ${(v.A * v.w * v.w).toFixed(2)} m/s²` },
-    { id: "newton2", name: "⚡ Newton's Second Law", desc: "F = m·a", formula: "F = ma", vars: [{label:"Mass (kg)",key:"m",def:5},{label:"Acceleration (m/s²)",key:"a",def:3.5}], compute: (v)=>`Force = ${(v.m*v.a).toFixed(2)} N` },
-    { id: "kinetic", name: "💥 Kinetic Energy", desc: "½ mv²", formula: "E_k = ½ m v²", vars: [{label:"Mass (kg)",key:"m",def:3},{label:"Velocity (m/s)",key:"v",def:8}], compute: (v)=>`Energy = ${(0.5*v.m*v.v*v.v).toFixed(2)} J` },
-    { id: "gravity", name: "🌍 Universal Gravitation", desc: "F = G·mM/r²", vars: [{label:"m1 (kg)",key:"m1",def:1000},{label:"m2 (kg)",key:"m2",def:1000},{label:"r (m)",key:"r",def:5}], compute: (v)=>`F = ${(6.674e-11*v.m1*v.m2/(v.r*v.r)).toExponential(2)} N` },
-    { id: "pendulum", name: "🌀 Simple Pendulum", desc: "T = 2π√(L/g)", vars: [{label:"Length (m)",key:"L",def:1.5},{label:"g (m/s²)",key:"g",def:9.81}], compute: (v)=>`Period = ${(2*Math.PI*Math.sqrt(v.L/v.g)).toFixed(3)} s` },
-    { id: "timedil", name: "⏱️ Time Dilation", desc: "γ = 1/√(1-v²/c²)", vars: [{label:"v/c (%)",key:"beta",def:86}], compute: (v)=>`γ = ${(1/Math.sqrt(1-Math.pow(v.beta/100,2))).toFixed(5)}` },
-    { id: "momentum", name: "🎯 Linear Momentum", desc: "p = mv", vars: [{label:"Mass (kg)",key:"m",def:4},{label:"Velocity",key:"v",def:9}], compute: (v)=>`Momentum = ${(v.m*v.v).toFixed(2)} kg·m/s` },
-    { id: "spring", name: "🧲 Spring Potential", desc: "U = ½kx²", vars: [{label:"k (N/m)",key:"k",def:200},{label:"x (m)",key:"x",def:0.3}], compute: (v)=>`PE = ${(0.5*v.k*v.x*v.x).toFixed(2)} J` },
-    { id: "doppler", name: "📡 Doppler Effect", desc: "f' = f (v_sound)/(v_sound ∓ v_source)", vars: [{label:"Source Freq (Hz)",key:"fs",def:440},{label:"v_src (m/s)",key:"vs",def:30}], compute: (v)=>`Observed = ${(v.fs*343/(343-v.vs)).toFixed(1)} Hz` },
-    { id: "ohms", name: "⚡ Ohm's Law", desc: "V = IR", vars: [{label:"Current (A)",key:"i",def:3},{label:"Resistance (Ω)",key:"r",def:15}], compute: (v)=>`Voltage = ${(v.i*v.r).toFixed(2)} V` },
-    { id: "coulomb", name: "⚛️ Coulomb's Law", desc: "F = k·q₁q₂/r²", vars: [{label:"q1 (µC)",key:"q1",def:6},{label:"q2 (µC)",key:"q2",def:6},{label:"r (cm)",key:"r",def:15}], compute: (v)=>`F = ${(8.99e9 * (v.q1*1e-6)*(v.q2*1e-6)/Math.pow(v.r/100,2)).toExponential(2)} N` },
-    { id: "escape", name: "🚀 Escape Velocity", desc: "√(2GM/R)", vars: [{label:"Planet Mass (M🜨)",key:"M",def:1}], compute: (v)=>`v_esc = ${(11.2*Math.sqrt(v.M)).toFixed(2)} km/s` },
-    { id: "debroglie", name: "🌈 de Broglie Wavelength", desc: "λ = h/p", vars: [{label:"Momentum (kg·m/s)",key:"p",def:3e-24}], compute: (v)=>`λ = ${(6.626e-34/v.p).toExponential(2)} m` },
-    { id: "snell", name: "🔆 Snell's Law", desc: "n₁ sinθ₁ = n₂ sinθ₂", vars: [{label:"n₁",key:"n1",def:1},{label:"n₂",key:"n2",def:1.52},{label:"θ₁ (°)",key:"ang",def:45}], compute: (v)=>{let ang2=Math.asin(v.n1*Math.sin(v.ang*Math.PI/180)/v.n2)*180/Math.PI; return `θ₂ = ${ang2.toFixed(2)}°`;} },
-    { id: "kepler3", name: "🪐 Kepler's Third Law", desc: "T² ∝ a³", vars: [{label:"Semi-major axis (AU)",key:"a",def:1.8}], compute: (v)=>`Orbital Period = ${Math.sqrt(v.a*v.a*v.a).toFixed(2)} years` },
-    { id: "wien", name: "🌡️ Wien's Displacement", desc: "λ_max = b/T", vars: [{label:"Temperature (K)",key:"T",def:5500}], compute: (v)=>`λ_peak = ${(2.897e-3/v.T).toExponential(2)} m` },
-    { id: "compton", name: "💫 Compton Scattering", desc: "Δλ = h/(mₑc)·(1-cosθ)", vars: [{label:"θ (deg)",key:"theta",def:90}], compute: (v)=>`Δλ = ${(2.426e-12*(1-Math.cos(v.theta*Math.PI/180))).toExponential(2)} m` },
-    { id: "angular_m", name: "🔄 Angular Momentum", desc: "L = Iω", vars: [{label:"Moment of Inertia",key:"I",def:3},{label:"ω (rad/s)",key:"w",def:4}], compute: (v)=>`L = ${(v.I*v.w).toFixed(2)} kg·m²/s` },
-    { id: "torque", name: "🔧 Torque", desc: "τ = rF sinθ", vars: [{label:"Force (N)",key:"F",def:15},{label:"Lever Arm (m)",key:"r",def:0.8}], compute: (v)=>`τ = ${(v.F*v.r).toFixed(2)} Nm` },
-    { id: "buoyancy", name: "💧 Archimedes' Principle", desc: "F_b = ρVg", vars: [{label:"Volume (m³)",key:"V",def:0.005}], compute: (v)=>`Buoyancy = ${(1000*v.V*9.81).toFixed(2)} N` },
-    { id: "ideal_gas", name: "🧪 Ideal Gas Law", desc: "PV = nRT", vars: [{label:"n (mol)",key:"n",def:1.5},{label:"T (K)",key:"T",def:350}], compute: (v)=>`Pressure ≈ ${(v.n*8.314*v.T/0.0244).toExponential(2)} Pa` },
-    { id: "photoelectric", name: "⚡ Photoelectric Effect", desc: "K_max = hf - φ", vars: [{label:"Frequency (PHz)",key:"f",def:1.5},{label:"Work Function (eV)",key:"phi",def:2.5}], compute: (v)=>`K_max = ${(6.63e-34*v.f*1e15/1.6e-19 - v.phi).toFixed(2)} eV` }
-  ];
-  // Expand to 150+ by intelligent variations
-  let fullLibrary = [...corePhysicsModules];
-  for(let i=0; i<40; i++) {
-    let src = corePhysicsModules[i % corePhysicsModules.length];
-    fullLibrary.push({ ...src, id: src.id+i+"_ex", name: src.name + " ◈", desc: src.desc });
-  }
-  const topicDatabase = fullLibrary.slice(0, 65);
-  
-  const topicsGrid = document.getElementById('topicsGridContainer');
-  let activeTopic = topicDatabase[0];
-  function renderAllTopics() {
-    topicsGrid.innerHTML = '';
-    topicDatabase.forEach(t => {
-      const card = document.createElement('div');
-      card.className = 'topic-card';
-      if(activeTopic.id === t.id) card.classList.add('active');
-      card.innerHTML = `<div><i class="fas fa-quantum"></i> <strong>${t.name}</strong><br><span style="font-size:0.7rem;">${t.desc.substring(0,32)}</span></div>`;
-      card.addEventListener('click', () => {
-        activeTopic = t;
-        renderAllTopics();
-        updatePremiumPanel(t);
-      });
-      topicsGrid.appendChild(card);
-    });
-  }
-  function updatePremiumPanel(topic) {
-    let inner = `<h3><i class="fas fa-microscope"></i> ${topic.name}</h3><div class="formula-glow">📐 ${topic.formula || topic.desc}</div>`;
-    (topic.vars || []).forEach(v => {
-      inner += `<label style="display:block; margin-top:12px;">${v.label}</label>
-               <input type="number" id="premiumVar_${v.key}" value="${v.def}" step="any">`;
-    });
-    inner += `<button id="computePremiumBtn" style="margin-top: 14px; width:100%;"><i class="fas fa-calculator"></i> Calculate & Simulate</button>
-             <div id="premiumResultArea" class="result-glass" style="margin-top:14px;">⚡ Ready — adjust parameters to explore real physics</div>
-             <div class="premium-badge" style="margin-top:14px;">✨ Quantum Atlas Engine v2.0 • 250+ parameter space</div>`;
-    document.getElementById('dynamicLabCore').innerHTML = inner;
-    const computeBtn = document.getElementById('computePremiumBtn');
-    const computeAction = () => {
-      let values = {};
-      (topic.vars || []).forEach(v => {
-        let el = document.getElementById(`premiumVar_${v.key}`);
-        values[v.key] = el ? parseFloat(el.value) : v.def;
-      });
-      let output = topic.compute(values);
-      document.getElementById('premiumResultArea').innerHTML = `<i class="fas fa-charging-station"></i> ${output}`;
-    };
-    computeBtn.addEventListener('click', computeAction);
-    computeAction();
-  }
-  renderAllTopics();
-  updatePremiumPanel(activeTopic);
-
-  // =============== ADVANCED GRAPH ENGINE ===============
-  let masterChart = null;
-  const graphSelect = document.getElementById('graphModeSelect');
-  const slider = document.getElementById('morphSlider');
-  const sliderValSpan = document.getElementById('sliderLabel');
-  const refreshGraph = document.getElementById('refreshGraphBtn');
-  
-  function fetchGraphData(mode, paramVal) {
-    let pts = 240, tMax = 12;
-    let xAxis = Array.from({length: pts+1}, (_,i) => (i/pts)*tMax);
-    let yData = new Array(pts+1);
-    let omega = 1.8 + paramVal * 6.5;
-    let damp = 0.15 + paramVal * 1.8;
-    switch(mode) {
-      case 'shm': yData = xAxis.map(t => 3.5 * Math.cos(omega * t + paramVal*Math.PI)); break;
-      case 'damped': yData = xAxis.map(t => 4.5 * Math.exp(-damp*t) * Math.cos(3.8*t + paramVal)); break;
-      case 'wave_packet': yData = xAxis.map(t => Math.exp(-Math.pow((t-5)/(1.2+paramVal*2),2)) * Math.cos(7.5*t + paramVal*4)); break;
-      case 'dist_const': yData = xAxis.map(t => (1.5+paramVal*4.5) * t); break;
-      case 'dist_acc': yData = xAxis.map(t => 0.5 * (2.5+paramVal*7) * t*t); break;
-      case 'energy_spring': yData = xAxis.map(t => 14 * Math.pow(Math.sin(t*(1.2+paramVal)), 2)); break;
-      case 'projectile': let vInit = 14 + paramVal*24; yData = xAxis.map(t => vInit*t - 0.5*9.8*t*t).map(v=>v<0?0:v); break;
-      case 'cooling': let kCool = 0.06 + paramVal*0.24; yData = xAxis.map(t => 22 + 68*Math.exp(-kCool*t)); break;
-      case 'gravity_inv': yData = xAxis.map(r => 420 / Math.pow(r+0.8, 1.15 + paramVal*0.7)); break;
-      case 'decay': let lambdaDec = 0.07 + paramVal/65; yData = xAxis.map(t => 100 * Math.exp(-lambdaDec*t)); break;
-      case 'relativistic': yData = xAxis.map(b => 1/Math.sqrt(1 - Math.pow(b/13 * paramVal, 2))).map(v=>isNaN(v)?5:v); break;
-      case 'kepler': yData = xAxis.map(r => 0.9 / (r + 0.35 + paramVal*0.7)); break;
-      case 'quantum_prob': yData = xAxis.map(xv => Math.exp(-paramVal*1.6 * xv) * Math.sin(xv*3.2)**2); break;
-      case 'schrodinger': yData = xAxis.map(xv => Math.cos(xv*2.6)*Math.exp(-Math.pow(xv-5.5,2)/(3.2+paramVal*5))); break;
-      default: yData = xAxis.map(t => Math.sin(t));
+    // Theme Switcher
+    function setTheme(theme) {
+        document.body.setAttribute('data-theme', theme);
+        localStorage.setItem('cai_theme', theme);
+        document.querySelectorAll('.theme-option').forEach(opt => {
+            opt.classList.toggle('active', opt.getAttribute('data-theme') === theme);
+        });
+        if(typeof updateCharts === 'function') setTimeout(updateCharts, 50);
     }
-    return { labels: xAxis.map(v=>v.toFixed(1)), data: yData };
-  }
-  function renderMainGraph() {
-    let mode = graphSelect.value;
-    let rawParam = parseFloat(slider.value) / 100;
-    sliderValSpan.innerText = `λ = ${rawParam.toFixed(2)}`;
-    let { labels, data } = fetchGraphData(mode, rawParam);
-    if(masterChart) masterChart.destroy();
-    let ctx = document.getElementById('masterGraphCanvas').getContext('2d');
-    masterChart = new Chart(ctx, {
-      type: 'line',
-      data: { labels, datasets: [{ label: `Quantum Atlas • ${mode}`, data, borderColor: '#4bc0ff', backgroundColor: 'rgba(75,192,255,0.05)', borderWidth: 2.8, fill: true, tension: 0.25, pointRadius: 0 }] },
-      options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { labels: { color: '#ccddee' } } } }
+    document.querySelectorAll('.theme-option').forEach(btn => {
+        btn.addEventListener('click', () => setTheme(btn.getAttribute('data-theme')));
     });
-  }
-  slider.addEventListener('input', renderMainGraph);
-  refreshGraph.addEventListener('click', renderMainGraph);
-  graphSelect.addEventListener('change', renderMainGraph);
-  renderMainGraph();
+    setTheme(localStorage.getItem('cai_theme') || 'light');
 
-  // Theme Manager
-  const themeButtons = document.querySelectorAll('.theme-dot');
-  const bodyElement = document.body;
-  function applyTheme(themeName) {
-    bodyElement.className = `theme-${themeName}`;
-    const orbElem = document.querySelector('.orb1');
-    if(themeName === 'quantum') orbElem.style.background = 'radial-gradient(circle, rgba(0,150,255,0.2), transparent)';
-    if(themeName === 'obsidian') orbElem.style.background = 'radial-gradient(circle, rgba(80,80,120,0.2), transparent)';
-    if(themeName === 'cosmic') orbElem.style.background = 'radial-gradient(circle, rgba(120,80,255,0.18), transparent)';
-    if(themeName === 'aurora') orbElem.style.background = 'radial-gradient(circle, rgba(0,230,210,0.18), transparent)';
-  }
-  themeButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      let theme = btn.getAttribute('data-theme');
-      applyTheme(theme);
+    function parseAmount(v) { if(!v) return 0; return parseFloat(v.toString().replace(/,/g, '')) || 0; }
+
+    // Animated counter function
+    function animateValue(element, start, end, duration) {
+        if(!element) return;
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            const value = Math.floor(progress * (end - start) + start);
+            element.innerHTML = `₹${value.toLocaleString()}`;
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            }
+        };
+        window.requestAnimationFrame(step);
+    }
+
+    // Generate unique colors for each expense head
+    function getUniqueColorFromString(str, index) {
+        let hash = 0;
+        for(let i = 0; i < str.length; i++) {
+            hash = ((hash << 5) - hash) + str.charCodeAt(i);
+            hash = hash & hash;
+        }
+        hash = (hash + index * 131) % 360;
+        return `hsl(${Math.abs(hash)}, 70%, 55%)`;
+    }
+
+    const expenseHeadsList = [
+        "Land Purchase - Factory Site", "Land Registration & Stamp Duty", "Land Development & Leveling",
+        "Soil Testing & Geotechnical Survey", "Topographical Survey", "Environmental Impact Assessment",
+        "Site Clearance & Demolition", "Boundary Wall & Fencing", "Security Gate & Guard House",
+        "Approach Road Construction", "Internal Road & Paving", "Landscaping & Green Belt", "Drainage System Installation",
+        "Factory License Application", "Building Plan Approval", "Pollution Control Board NOC",
+        "Fire Safety NOC", "Electricity Department Approval", "Water Connection Approval",
+        "SEZ/Industrial Area Registration", "Udyog Aadhaar Registration", "GST Registration",
+        "Legal Consultant Fees", "Architect Fees", "Structural Engineer Fees", "Project Management Consultant",
+        "Main Factory Shed Construction", "Warehouse/Godown Construction", "Office Building Construction",
+        "Employee Amenities Building", "Canteen Building", "Toilet Blocks & Sanitary Facilities",
+        "Parking Area & Truck Bay", "Loading/Unloading Platform", "Factory Flooring & Epoxy Coating",
+        "False Ceiling & Partitions", "Plumbing & Sanitary Installation", "Fire Fighting System Installation",
+        "Ventilation & Exhaust System", "Industrial Door Installation", "Window & Glazing Work",
+        "Painting & Waterproofing", "Civil Construction Materials", "Cement & Concrete Supply",
+        "Steel Structure Fabrication", "Roofing Sheet Installation",
+        "HT/LT Power Line Installation", "Transformer Purchase & Installation", "DG Set Purchase & Installation",
+        "Solar Power System Installation", "Electrical Panel & Distribution Board", "Industrial Wiring & Cabling",
+        "Lighting & Fixtures Installation", "Earthing & Lightning Protection", "Power Backup System (UPS/Battery)",
+        "Energy Meter & Monitoring System", "Substation Setup", "Power Factor Correction Panel",
+        "Borewell Drilling & Pump Installation", "Overhead Water Tank Construction", "Water Treatment Plant (WTP)",
+        "Effluent Treatment Plant (ETP)", "Sewage Treatment Plant (STP)", "Pipe Line & Distribution Network",
+        "Cooling Tower Installation", "Compressed Air System Installation", "Steam Boiler Installation",
+        "Chiller & HVAC System", "Industrial RO Plant", "Water Softener System",
+        "CNC Machines Purchase", "Lathe & Milling Machines", "Press & Hydraulic Press", "Conveyor Belt System",
+        "Packaging Machinery", "Filling & Sealing Machines", "Weighing & Measuring Equipment",
+        "Material Handling Equipment (Forklift/Crane)", "Industrial Robots & Automation", "Assembly Line Setup",
+        "Quality Testing Machines", "Lab Equipment & Instruments", "Spare Parts & Consumables",
+        "Machine Installation & Commissioning", "Machine Calibration & Certification", "AMC & Maintenance Contract",
+        "JCB/Excavator Purchase", "Crane & Hoist Installation", "Generator Set", "Air Compressor",
+        "Raw Material Purchase - Bulk", "Packaging Materials", "Chemicals & Solvents", "Lubricants & Oils",
+        "Fuel (Petrol/Diesel/CNG)", "Consumables & Stationery", "Component Parts Purchase",
+        "Semi-finished Goods Inventory", "Warehouse Racks & Shelving", "Pallet & Storage Containers",
+        "Inventory Management Software", "Barcode Scanner & Labeling System", "Steel/Sheet Metal Purchase",
+        "Plastic Raw Material", "Wood & Timber",
+        "Factory Workers Wages", "Skilled Labour Payment", "Supervisors & Foremen Salary", "Plant Manager Salary",
+        "Security Guards Salary", "Housekeeping Staff Salary", "Contract Labour Payment", "Over Time (OT) Payment",
+        "Bonus & Diwali Bonus", "PF Contribution (12%)", "ESI Contribution (0.75%)", "Professional Tax",
+        "Workers Training Programs", "Safety Training & Drills", "Uniform & Safety Gear", "Canteen & Food Subsidy",
+        "Workers Transportation Bus Service", "Medical Checkup Camp", "Workers Compensation Insurance",
+        "Quality Testing Equipment", "Laboratory Setup & Instruments", "ISO Certification Cost",
+        "Quality Management System", "Third Party Testing Charges", "Product Certification (BIS/CE/FDA)",
+        "Calibration of Instruments", "Quality Training Programs", "Inspection & Audit Fees",
+        "Non-conforming Material Disposal", "Statistical Process Control Software",
+        "Raw Material Inbound Transport", "Finished Goods Outbound Transport", "Fleet Vehicle Purchase & Maintenance",
+        "Fuel for Transport Vehicles", "Loading & Unloading Charges", "Warehouse Rent", "Cold Storage Rent",
+        "Export/Import Clearance & Customs Duty", "Freight & Courier Charges", "Transport Insurance",
+        "Container Rental", "Cargo Handling Charges",
+        "Fire Extinguishers & Fire Safety Equipment", "First Aid Kits & Medical Room Setup", "Safety Shoes & Helmets",
+        "Safety Gloves & Goggles", "Factory Insurance Premium", "Machinery Insurance", "Legal & Compliance Fees",
+        "Factory Inspector Fees", "Pollution Control Board Consent Renewal", "Factory License Renewal",
+        "Trade License Renewal", "GST Registration & Filing", "Company Registration (MCA Fees)",
+        "Audit Fees (Statutory/Tax Audit)", "Emergency Exit & Signage", "Safety Audit & Risk Assessment",
+        "Hazardous Waste Disposal", "Solid Waste Management", "Effluent Treatment Plant Operation",
+        "Air Pollution Control Equipment", "Green Belt Development", "Environmental Audit Fees",
+        "Rainwater Harvesting System", "Sewage Treatment Plant Operation", "Carbon Credit Monitoring",
+        "Noise Control Measures",
+        "R&D Lab Setup", "Prototype Development Cost", "New Product Testing", "Patent Registration & Renewal",
+        "R&D Staff Salary", "Consultancy Fees for R&D", "Technology Transfer Fees", "Software for Design (CAD/CAM)",
+        "3D Printing & Modeling",
+        "Electricity Bill - Factory", "Water Bill", "Gas / Diesel Bill", "Telephone & Internet Bill",
+        "Waste Disposal Charges", "Factory Cleaning & Housekeeping", "Pest Control Services",
+        "Gardening & Landscaping", "Office Supplies & Stationery", "Software Subscriptions (ERP/Accounting)",
+        "Cloud Storage & Backup",
+        "Product Brochure & Catalog Printing", "Website Development & Hosting", "Digital Marketing (SEO/Social Media)",
+        "Trade Show & Exhibition Participation", "Sales Commission", "Customer Visit Expenses",
+        "Sample Production Cost", "Branding & Signage", "Advertisement (Print/TV/Radio)", "Lead Generation Services",
+        "Term Loan EMI Payment", "Working Capital Interest", "Bank Charges & Commissions", "LC & BG Charges",
+        "Credit Card Processing Fees", "Audit & Accounting Fees", "Tax Payment (Income Tax/GST/TDS)",
+        "Late Filing Penalty", "Project Loan Processing Fee", "Insurance Premium - Directors",
+        "Building Maintenance & Repair", "Machinery Maintenance & Repair", "Electrical System Maintenance",
+        "Plumbing Repair", "HVAC Maintenance", "Generator Maintenance", "Vehicle Maintenance",
+        "Computer & IT Hardware Repair", "Furniture Repair", "Annual Maintenance Contract (AMC)",
+        "Computer & Laptop Purchase", "Server & Networking Equipment", "ERP Software Purchase",
+        "Accounting Software License", "Internet & Connectivity", "Cybersecurity Solutions", "Data Backup & Recovery",
+        "CCTV Camera System", "Biometric Attendance System", "Printer & Scanner Purchase",
+        "Travel & Conveyance", "Staff Welfare & Recreation", "Donations & CSR Activities",
+        "Membership & Subscription Fees", "Training & Development Programs", "Recruitment & Hiring Cost",
+        "Office Furniture & Equipment", "Emergency & Contingency Fund", "Tea & Coffee Supplies",
+        "Festival Celebration Expenses"
+    ];
+
+    const expenseColors = {};
+    expenseHeadsList.forEach((head, index) => {
+        expenseColors[head] = getUniqueColorFromString(head, index);
     });
-  });
+
+    function buildDropdown() {
+        const select = document.getElementById('expCat');
+        if(!select) return;
+        
+        const categories = {
+            'Land': '🏗️ LAND & SITE', 'Registration': '🏗️ LAND & SITE', 'Development': '🏗️ LAND & SITE',
+            'Soil': '🏗️ LAND & SITE', 'Topographical': '🏗️ LAND & SITE', 'Environmental': '🌱 ENVIRONMENTAL',
+            'Site': '🏗️ LAND & SITE', 'Boundary': '🏗️ LAND & SITE', 'Security': '🏗️ LAND & SITE',
+            'Approach': '🏗️ LAND & SITE', 'Internal': '🏗️ LAND & SITE', 'Landscaping': '🏗️ LAND & SITE',
+            'Drainage': '🏗️ LAND & SITE', 'Factory License': '📋 APPROVALS', 'Building Plan': '📋 APPROVALS',
+            'Pollution': '🌱 ENVIRONMENTAL', 'Fire Safety': '🛡️ SAFETY', 'Electricity Department': '⚡ POWER',
+            'Water Connection': '💧 UTILITIES', 'SEZ': '📋 APPROVALS', 'Udyog': '📋 APPROVALS',
+            'GST Registration': '📋 APPROVALS', 'Legal Consultant': '📋 APPROVALS', 'Architect': '📋 APPROVALS',
+            'Structural Engineer': '📋 APPROVALS', 'Project Management': '📋 APPROVALS',
+            'Main Factory': '🏭 CONSTRUCTION', 'Warehouse': '🏭 CONSTRUCTION', 'Office Building': '🏭 CONSTRUCTION',
+            'Employee Amenities': '🏭 CONSTRUCTION', 'Canteen': '🏭 CONSTRUCTION', 'Toilet': '🏭 CONSTRUCTION',
+            'Parking': '🏭 CONSTRUCTION', 'Loading': '🏭 CONSTRUCTION', 'Flooring': '🏭 CONSTRUCTION',
+            'False Ceiling': '🏭 CONSTRUCTION', 'Plumbing': '🏭 CONSTRUCTION', 'Fire Fighting': '🛡️ SAFETY',
+            'Ventilation': '🏭 CONSTRUCTION', 'Industrial Door': '🏭 CONSTRUCTION', 'Window': '🏭 CONSTRUCTION',
+            'Painting': '🏭 CONSTRUCTION', 'Civil Construction': '🏭 CONSTRUCTION', 'Cement': '🏭 CONSTRUCTION',
+            'Steel Structure': '🏭 CONSTRUCTION', 'Roofing': '🏭 CONSTRUCTION', 'HT/LT': '⚡ POWER',
+            'Transformer': '⚡ POWER', 'DG Set': '⚡ POWER', 'Solar': '⚡ POWER', 'Electrical Panel': '⚡ POWER',
+            'Industrial Wiring': '⚡ POWER', 'Lighting': '⚡ POWER', 'Earthing': '⚡ POWER', 'Power Backup': '⚡ POWER',
+            'Energy Meter': '⚡ POWER', 'Substation': '⚡ POWER', 'Power Factor': '⚡ POWER', 'Borewell': '💧 UTILITIES',
+            'Overhead Water': '💧 UTILITIES', 'Water Treatment': '💧 UTILITIES', 'Effluent Treatment': '🌱 ENVIRONMENTAL',
+            'Sewage Treatment': '🌱 ENVIRONMENTAL', 'Pipe Line': '💧 UTILITIES', 'Cooling Tower': '🔧 MACHINERY',
+            'Compressed Air': '🔧 MACHINERY', 'Steam Boiler': '🔧 MACHINERY', 'Chiller': '🔧 MACHINERY',
+            'Industrial RO': '💧 UTILITIES', 'Water Softener': '💧 UTILITIES', 'CNC': '🔧 MACHINERY',
+            'Lathe': '🔧 MACHINERY', 'Press': '🔧 MACHINERY', 'Conveyor': '🔧 MACHINERY', 'Packaging Machinery': '🔧 MACHINERY',
+            'Filling': '🔧 MACHINERY', 'Weighing': '🔧 MACHINERY', 'Material Handling': '🔧 MACHINERY',
+            'Industrial Robots': '🔧 MACHINERY', 'Assembly Line': '🔧 MACHINERY', 'Quality Testing': '🔬 QUALITY',
+            'Lab Equipment': '🔬 QUALITY', 'Spare Parts': '🔧 MACHINERY', 'Machine Installation': '🔧 MACHINERY',
+            'Calibration': '🔬 QUALITY', 'AMC': '🔧 MACHINERY', 'JCB': '🔧 MACHINERY', 'Crane': '🔧 MACHINERY',
+            'Generator Set': '⚡ POWER', 'Air Compressor': '🔧 MACHINERY', 'Raw Material': '📦 MATERIALS',
+            'Packaging Materials': '📦 MATERIALS', 'Chemicals': '📦 MATERIALS', 'Lubricants': '📦 MATERIALS',
+            'Fuel': '📦 MATERIALS', 'Consumables': '📦 MATERIALS', 'Component Parts': '📦 MATERIALS',
+            'Semi-finished': '📦 MATERIALS', 'Warehouse Racks': '📦 MATERIALS', 'Pallet': '📦 MATERIALS',
+            'Inventory Management': '💻 IT', 'Barcode': '💻 IT', 'Steel Sheet': '📦 MATERIALS',
+            'Plastic Raw': '📦 MATERIALS', 'Wood': '📦 MATERIALS', 'Factory Workers': '👥 LABOUR',
+            'Skilled Labour': '👥 LABOUR', 'Supervisors': '👥 LABOUR', 'Plant Manager': '👥 LABOUR',
+            'Security Guards': '👥 LABOUR', 'Housekeeping': '👥 LABOUR', 'Contract Labour': '👥 LABOUR',
+            'Over Time': '👥 LABOUR', 'Bonus': '👥 LABOUR', 'PF Contribution': '👥 LABOUR',
+            'ESI Contribution': '👥 LABOUR', 'Professional Tax': '👥 LABOUR', 'Workers Training': '👥 LABOUR',
+            'Safety Training': '🛡️ SAFETY', 'Uniform': '👥 LABOUR', 'Workers Transportation': '👥 LABOUR',
+            'Medical Checkup': '👥 LABOUR', 'Workers Compensation': '🛡️ SAFETY', 'ISO Certification': '🔬 QUALITY',
+            'Quality Management': '🔬 QUALITY', 'Third Party Testing': '🔬 QUALITY', 'Product Certification': '🔬 QUALITY',
+            'Inspection': '🔬 QUALITY', 'Non-conforming': '🔬 QUALITY', 'Statistical Process': '🔬 QUALITY',
+            'Inbound Transport': '🚚 LOGISTICS', 'Outbound Transport': '🚚 LOGISTICS', 'Fleet Vehicle': '🚚 LOGISTICS',
+            'Fuel for Transport': '🚚 LOGISTICS', 'Loading Charges': '🚚 LOGISTICS', 'Warehouse Rent': '🚚 LOGISTICS',
+            'Cold Storage': '🚚 LOGISTICS', 'Export/Import': '🚚 LOGISTICS', 'Freight': '🚚 LOGISTICS',
+            'Transport Insurance': '🛡️ SAFETY', 'Container Rental': '🚚 LOGISTICS', 'Cargo Handling': '🚚 LOGISTICS',
+            'Fire Extinguishers': '🛡️ SAFETY', 'First Aid': '🛡️ SAFETY', 'Safety Shoes': '🛡️ SAFETY',
+            'Safety Gloves': '🛡️ SAFETY', 'Factory Insurance': '🛡️ SAFETY', 'Machinery Insurance': '🛡️ SAFETY',
+            'Legal Fees': '📋 APPROVALS', 'Factory Inspector': '📋 APPROVALS', 'Pollution Control Board': '🌱 ENVIRONMENTAL',
+            'Factory License Renewal': '📋 APPROVALS', 'Trade License': '📋 APPROVALS', 'GST Filing': '📋 APPROVALS',
+            'Company Registration': '📋 APPROVALS', 'Audit Fees': '💰 FINANCE', 'Emergency Exit': '🛡️ SAFETY',
+            'Safety Audit': '🛡️ SAFETY', 'Hazardous Waste': '🌱 ENVIRONMENTAL', 'Solid Waste': '🌱 ENVIRONMENTAL',
+            'Air Pollution': '🌱 ENVIRONMENTAL', 'Green Belt': '🌱 ENVIRONMENTAL', 'Environmental Audit': '🌱 ENVIRONMENTAL',
+            'Rainwater Harvesting': '🌱 ENVIRONMENTAL', 'Carbon Credit': '🌱 ENVIRONMENTAL', 'Noise Control': '🌱 ENVIRONMENTAL',
+            'R&D Lab': '💡 R&D', 'Prototype': '💡 R&D', 'New Product': '💡 R&D', 'Patent': '💡 R&D',
+            'R&D Staff': '💡 R&D', 'Consultancy R&D': '💡 R&D', 'Technology Transfer': '💡 R&D', 'CAD/CAM': '💡 R&D',
+            '3D Printing': '💡 R&D', 'Electricity Bill': '💡 UTILITIES', 'Water Bill': '💡 UTILITIES',
+            'Gas Bill': '💡 UTILITIES', 'Telephone': '💡 UTILITIES', 'Waste Disposal': '💡 UTILITIES',
+            'Factory Cleaning': '💡 UTILITIES', 'Pest Control': '💡 UTILITIES', 'Gardening': '💡 UTILITIES',
+            'Office Supplies': '💡 UTILITIES', 'Software Subscriptions': '💻 IT', 'Cloud Storage': '💻 IT',
+            'Product Brochure': '📢 MARKETING', 'Website Development': '📢 MARKETING', 'Digital Marketing': '📢 MARKETING',
+            'Trade Show': '📢 MARKETING', 'Sales Commission': '📢 MARKETING', 'Customer Visit': '📢 MARKETING',
+            'Sample Production': '📢 MARKETING', 'Branding': '📢 MARKETING', 'Advertisement': '📢 MARKETING',
+            'Lead Generation': '📢 MARKETING', 'Term Loan EMI': '💰 FINANCE', 'Working Capital Interest': '💰 FINANCE',
+            'Bank Charges': '💰 FINANCE', 'LC Charges': '💰 FINANCE', 'Credit Card Fees': '💰 FINANCE',
+            'Tax Payment': '💰 FINANCE', 'Late Filing Penalty': '💰 FINANCE', 'Project Loan Fee': '💰 FINANCE',
+            'Directors Insurance': '💰 FINANCE', 'Building Maintenance': '🔧 MAINTENANCE', 'Machinery Maintenance': '🔧 MAINTENANCE',
+            'Electrical Maintenance': '🔧 MAINTENANCE', 'Plumbing Repair': '🔧 MAINTENANCE', 'HVAC Maintenance': '🔧 MAINTENANCE',
+            'Generator Maintenance': '🔧 MAINTENANCE', 'Vehicle Maintenance': '🔧 MAINTENANCE', 'Computer Repair': '🔧 MAINTENANCE',
+            'Furniture Repair': '🔧 MAINTENANCE', 'Computer Purchase': '💻 IT', 'Server Purchase': '💻 IT',
+            'ERP Software': '💻 IT', 'Accounting Software': '💻 IT', 'Internet Connectivity': '💻 IT',
+            'Cybersecurity': '💻 IT', 'Data Backup': '💻 IT', 'CCTV System': '💻 IT', 'Biometric System': '💻 IT',
+            'Printer Purchase': '💻 IT', 'Travel Conveyance': '📌 MISC', 'Staff Welfare': '📌 MISC',
+            'Donations': '📌 MISC', 'Membership Fees': '📌 MISC', 'Recruitment': '📌 MISC', 'Office Furniture': '📌 MISC',
+            'Emergency Fund': '📌 MISC', 'Tea Coffee': '📌 MISC', 'Festival Celebration': '📌 MISC'
+        };
+        
+        let html = '<option value="" disabled selected>-- Select expense category (each has unique color) --</option>';
+        let currentGroup = '';
+        
+        for(let head of expenseHeadsList) {
+            let group = '📌 MISCELLANEOUS';
+            for(let [key, value] of Object.entries(categories)) {
+                if(head.toLowerCase().includes(key.toLowerCase())) {
+                    group = value;
+                    break;
+                }
+            }
+            
+            if(group !== currentGroup) {
+                if(currentGroup !== '') html += '</optgroup>';
+                html += `<optgroup label="${group}" style="font-weight:bold;">`;
+                currentGroup = group;
+            }
+            
+            const color = expenseColors[head];
+            html += `<option value="${head}" style="color: ${color}; font-weight: 500; border-left: 3px solid ${color};">${head}</option>`;
+        }
+        html += '</optgroup>';
+        select.innerHTML = html;
+    }
+
+    let expenses = JSON.parse(localStorage.getItem('cai_expenses') || '[]');
+    let trendChart, categoryChart;
+
+    function getColorForExpense(expenseName) {
+        if(expenseColors[expenseName]) return expenseColors[expenseName];
+        return getUniqueColorFromString(expenseName, 0);
+    }
+
+    function updateRecurringSummary() {
+        let recurringItemsList = expenses.filter(e => e.type === 'recurring');
+        let totalRecurring = recurringItemsList.reduce((s,e) => s + e.amount, 0);
+        let summaryDiv = document.getElementById('recurringSummary');
+        let recurringContainer = document.getElementById('recurringItems');
+        
+        if(recurringItemsList.length > 0) {
+            summaryDiv.style.display = 'block';
+            recurringContainer.innerHTML = recurringItemsList.slice(0,20).map(e => 
+                `<span class="recurring-item" style="border-left: 3px solid ${getColorForExpense(e.cat)}; background: ${getColorForExpense(e.cat)}20;">${e.desc.substring(0,25)}: ₹${e.amount.toLocaleString()}/m</span>`
+            ).join('');
+            if(recurringItemsList.length > 20) recurringContainer.innerHTML += `<span class="recurring-item">+${recurringItemsList.length-20} more...</span>`;
+            document.getElementById('totalRecurring').innerHTML = totalRecurring.toLocaleString();
+            document.getElementById('yearlyRecurring').innerHTML = (totalRecurring * 12).toLocaleString();
+        } else {
+            summaryDiv.style.display = 'none';
+        }
+    }
+
+    function updateCharts() {
+        let expenseAmounts = {}; 
+        expenses.forEach(e => expenseAmounts[e.cat] = (expenseAmounts[e.cat]||0) + e.amount);
+        
+        let last30 = [];
+        for(let i=29; i>=0; i--) { 
+            let d=new Date(); d.setDate(d.getDate()-i); 
+            let ds=d.toLocaleDateString(); 
+            last30.push(expenses.filter(e=>e.date===ds).reduce((s,e)=>s+e.amount,0)); 
+        }
+        
+        if(trendChart) trendChart.destroy();
+        if(categoryChart) categoryChart.destroy();
+        let primaryColor = getComputedStyle(document.body).getPropertyValue('--primary').trim() || '#1e3c72';
+        let ctx1 = document.getElementById('trendChart');
+        let ctx2 = document.getElementById('categoryChart');
+        
+        if(ctx1) trendChart = new Chart(ctx1, { 
+            type:'line', 
+            data:{ 
+                labels:Array.from({length:30},(_,i)=>`Day ${i+1}`), 
+                datasets:[{ label:'Factory Expenses (₹)', data:last30, borderColor:primaryColor, backgroundColor:primaryColor+'20', fill:true, tension:0.4 }] 
+            }, 
+            options:{ responsive:true, maintainAspectRatio:true, animations: { tension: { duration: 1000, easing: 'easeInOutQuart' } } } 
+        });
+        
+        if(ctx2 && Object.keys(expenseAmounts).length > 0) {
+            let labels = Object.keys(expenseAmounts);
+            let bgColors = labels.map(label => getColorForExpense(label));
+            categoryChart = new Chart(ctx2, { 
+                type:'doughnut', 
+                data:{ 
+                    labels:labels.map(k=>k.length>25?k.substring(0,22)+'...':k), 
+                    datasets:[{ data:Object.values(expenseAmounts), backgroundColor:bgColors }] 
+                }, 
+                options:{ responsive:true, maintainAspectRatio:true, animations: { animateRotate: true, animateScale: true } } 
+            });
+        }
+    }
+
+    function updateStats() {
+        let total = expenses.reduce((s,e)=>s+e.amount,0);
+        let cats = {}; 
+        expenses.forEach(e=>cats[e.cat]=(cats[e.cat]||0)+e.amount);
+        let top = Object.entries(cats).sort((a,b)=>b[1]-a[1])[0];
+        
+        animateValue(document.getElementById('totalExpenses'), 0, total, 500);
+        document.getElementById('monthlyAvg').innerHTML = `₹${Math.round(expenses.filter(e=>e.type==='recurring').reduce((s,e)=>s+e.amount,0)).toLocaleString()}`;
+        document.getElementById('topCategory').innerHTML = top ? top[0].substring(0,30) : '-';
+        document.getElementById('transactionCount').innerHTML = expenses.length;
+        
+        updateCharts(); 
+        renderTable(); 
+        updateRecurringSummary();
+        localStorage.setItem('cai_expenses', JSON.stringify(expenses));
+    }
+
+    function renderTable() {
+        let c = document.getElementById('expensesList');
+        if(expenses.length===0) { 
+            c.innerHTML='<p style="text-align:center; padding:20px; animation: pulse 2s infinite;">No factory expenses yet. Add your first expense above!</p>'; 
+            return; 
+        }
+        let h = `<table class="expense-table"><thead><tr><th>#</th><th>Date</th><th>Description</th><th>Category</th><th>Amount</th><th>Type</th><th></th></tr></thead><tbody>`;
+        expenses.slice().reverse().forEach((e,i) => {
+            let typeBadge = e.type === 'recurring' ? '<span class="expense-type-badge recurring">🔄 Recurring</span>' : '<span class="expense-type-badge onetime">🔹 One-time</span>';
+            let catColor = getColorForExpense(e.cat);
+            h += `<tr>
+                <td>${i+1}</td>
+                <td>${e.date}</td>
+                <td style="max-width:150px; overflow:hidden; text-overflow:ellipsis;" title="${e.desc}">${e.desc.length>25?e.desc.substring(0,22)+'...':e.desc}</td>
+                <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis; color:${catColor}; font-weight:500; border-left: 3px solid ${catColor}; background: ${catColor}10;" title="${e.cat}">${e.cat.length>35?e.cat.substring(0,32)+'...':e.cat}</td>
+                <td>₹${e.amount.toLocaleString()}</td>
+                <td>${typeBadge}</td>
+                <td><button class="delete-btn" onclick="deleteExpense(${expenses.length-1-i})">🗑️</button></td>
+            </tr>`;
+        });
+        h += `</tbody></table>`;
+        c.innerHTML = h;
+        
+        // Add fade-in animation to new rows
+        let rows = c.querySelectorAll('tbody tr');
+        rows.forEach((row, idx) => {
+            row.style.animation = `fadeInUp 0.3s ease ${idx * 0.03}s both`;
+        });
+    }
+
+    function deleteExpense(i) { expenses.splice(i,1); updateStats(); }
+    window.deleteExpense = deleteExpense;
+
+    document.getElementById('addExpenseBtn')?.addEventListener('click', () => {
+        let d = document.getElementById('expDesc').value.trim();
+        let a = parseAmount(document.getElementById('expAmount').value);
+        let cat = document.getElementById('expCat').value;
+        let type = document.getElementById('expType').value;
+        if(!d || a<=0) { alert('Enter valid description and amount'); return; }
+        if(!cat || cat === '') { alert('Please select an expense category'); return; }
+        expenses.push({ desc:d, amount:a, cat:cat, type:type, date:new Date().toLocaleDateString() });
+        document.getElementById('expDesc').value = ''; 
+        document.getElementById('expAmount').value = '';
+        document.getElementById('expCat').value = '';
+        updateStats();
+    });
+    
+    document.getElementById('clearExpensesBtn')?.addEventListener('click', () => { 
+        if(confirm('Delete all expenses? This action cannot be undone.')) { 
+            expenses = []; 
+            updateStats(); 
+        } 
+    });
+
+    // ============ TOOL FUNCTIONS ==========
+    function calcIncomeTax() { let i=parseAmount(document.getElementById('inc_income')?.value); let d=Math.min(parseAmount(document.getElementById('inc_80c')?.value),150000)+parseAmount(document.getElementById('inc_80d')?.value); let t=Math.max(0,i-d); let tax=0; if(t>250000) tax=(t-250000)*0.05; if(t>500000) tax=12500+(t-500000)*0.2; if(t>1000000) tax=112500+(t-1000000)*0.3; document.getElementById('inc_res').innerHTML = `💰 Taxable: ₹${t.toLocaleString()}<br>Tax: ₹${Math.round(tax)}<br>Cess: ₹${Math.round(tax*0.04)}<br><strong>Total: ₹${Math.round(tax*1.04)}</strong>`; }
+    function calcGST() { let a=parseAmount(document.getElementById('gst_amt')?.value); let r=parseFloat(document.getElementById('gst_rate')?.value)||18; let g=a*r/100; let total=document.getElementById('gst_type')?.value==='inclusive'?a:a+g; document.getElementById('gst_res').innerHTML = `💰 GST(${r}%): ₹${Math.round(g)}<br>Total: ₹${Math.round(total)}`; }
+    function calcEMI() { let p=parseAmount(document.getElementById('emi_amt')?.value); let r=(parseFloat(document.getElementById('emi_rate')?.value)||0)/12/100; let n=(parseFloat(document.getElementById('emi_tenure')?.value)||0)*12; let e=n>0?p*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1):0; document.getElementById('emi_res').innerHTML = `📅 EMI: ₹${Math.round(e)}<br>Total Interest: ₹${Math.round(e*n-p)}`; }
+    function calcSIP() { let m=parseAmount(document.getElementById('sip_amt')?.value); let r=(parseFloat(document.getElementById('sip_rate')?.value)||12)/100/12; let y=parseFloat(document.getElementById('sip_years')?.value)||10; let n=y*12; let f=m*((Math.pow(1+r,n)-1)/r)*(1+r); document.getElementById('sip_res').innerHTML = `💰 Maturity: ₹${Math.round(f)}<br>Gains: ₹${Math.round(f-m*n)}`; }
+    function calcFD() { let p=parseAmount(document.getElementById('fd_amt')?.value); let r=(parseFloat(document.getElementById('fd_rate')?.value)||7)/100; let y=parseFloat(document.getElementById('fd_years')?.value)||5; let f=p*Math.pow(1+r,y); document.getElementById('fd_res').innerHTML = `🏦 Maturity: ₹${Math.round(f)}<br>Interest: ₹${Math.round(f-p)}`; }
+    function calcHRA() { let b=parseAmount(document.getElementById('hra_basic')?.value); let h=parseAmount(document.getElementById('hra_rec')?.value); let r=parseAmount(document.getElementById('hra_rent')?.value); let e=Math.min(h, r*0.5, r-b*0.1); document.getElementById('hra_res').innerHTML = `🏠 HRA Exemption: ₹${Math.max(0,Math.floor(e))}`; }
+    function calcBreakEven() { let f=parseAmount(document.getElementById('be_fixed')?.value); let v=parseAmount(document.getElementById('be_var')?.value); let p=parseAmount(document.getElementById('be_price')?.value); let u=p>v?Math.ceil(f/(p-v)):0; document.getElementById('be_res').innerHTML = `📊 Break-even: ${u} units<br>Revenue: ₹${(u*p).toLocaleString()}`; }
+    function calcProfitMargin() { let c=parseAmount(document.getElementById('pm_cost')?.value); let p=parseAmount(document.getElementById('pm_price')?.value); let m=p>0?((p-c)/p*100).toFixed(1):0; document.getElementById('pm_res').innerHTML = `📈 Margin: ${m}%<br>Profit: ₹${(p-c)}`; }
+    function cashDeposit() { let a=parseAmount(document.getElementById('cash_amt')?.value); let msg=a<=250000?'✅ Safe to deposit':a<=500000?'⚠️ Use Section 44AD - Declare 6% profit':a<=1000000?'⚠️ Large deposit - Use 44AD':'🔴 Consult CA immediately'; document.getElementById('cash_res').innerHTML = `💰 ₹${a.toLocaleString()}<br>${msg}<br>💡 Section 44AD: Small businesses can declare just 6% profit on cash sales`; }
+    function currencyConvert() { let a=parseAmount(document.getElementById('curr_amt')?.value); let f=document.getElementById('curr_from')?.value; let t=document.getElementById('curr_to')?.value; let r={USD:1,EUR:0.92,GBP:0.79,INR:83.5,AUD:1.52,CAD:1.37,SGD:1.35,AED:3.67,JPY:151.2,CNY:7.24,CHF:0.91,NZD:1.66,SEK:10.7,KRW:1370}; let c=a*(r[t]/r[f]); document.getElementById('curr_res').innerHTML = `💱 ${a.toLocaleString()} ${f} = ${c.toFixed(2)} ${t}`; }
+    function pfCalc() { let s=parseAmount(document.getElementById('pf_sal')?.value); let pf=Math.min(s*0.12,1800); document.getElementById('pf_res').innerHTML = `💰 PF: ₹${pf.toFixed(2)} (Employee) + ₹${pf.toFixed(2)} (Employer)`; }
+    function gratuityCalc() { let s=parseAmount(document.getElementById('grat_sal')?.value); let y=parseFloat(document.getElementById('grat_years')?.value)||5; let g=s*y*15/26; document.getElementById('grat_res').innerHTML = `🎁 Gratuity: ₹${Math.round(g).toLocaleString()}`; }
+    function tdsSalary() { let s=parseAmount(document.getElementById('tds_sal')?.value); let d=parseAmount(document.getElementById('tds_ded')?.value); let t=Math.max(0,s-d); let tax=0; if(t>250000) tax=(t-250000)*0.05; if(t>500000) tax=12500+(t-500000)*0.2; if(t>1000000) tax=112500+(t-1000000)*0.3; document.getElementById('tds_res').innerHTML = `💳 Annual TDS: ₹${Math.round(tax)}<br>Monthly: ₹${Math.round(tax/12)}`; }
+    function ropCalc() { let lt=parseFloat(document.getElementById('rop_lt')?.value)||7; let dd=parseAmount(document.getElementById('rop_demand')?.value); let ss=parseAmount(document.getElementById('rop_safety')?.value); document.getElementById('rop_res').innerHTML = `📦 Reorder Point: ${Math.ceil(lt*dd+ss)} units`; }
+    function eoqCalc() { let d=parseAmount(document.getElementById('eoq_demand')?.value); let o=parseAmount(document.getElementById('eoq_order')?.value); let h=parseAmount(document.getElementById('eoq_holding')?.value); let e=Math.sqrt(2*d*o/h); document.getElementById('eoq_res').innerHTML = `📊 EOQ: ${Math.ceil(e)} units`; }
+    function form16() { let s=parseAmount(document.getElementById('f16_sal')?.value); let d=parseAmount(document.getElementById('f16_ded')?.value); let t=Math.max(0,s-d); let tax=0; if(t>250000) tax=(t-250000)*0.05; if(t>500000) tax=12500+(t-500000)*0.2; if(t>1000000) tax=112500+(t-1000000)*0.3; document.getElementById('f16_res').innerHTML = `📄 Form 16: Tax ₹${Math.round(tax)}`; }
+    function advanceTax() { let i=parseAmount(document.getElementById('adv_income')?.value); let tax=0; if(i>250000) tax=(i-250000)*0.05; if(i>500000) tax=12500+(i-500000)*0.2; if(i>1000000) tax=112500+(i-1000000)*0.3; document.getElementById('adv_res').innerHTML = `📅 Advance Tax: ₹${Math.round(tax)} (Pay in 4 installments)`; }
+    function duPont() { let pm=parseFloat(document.getElementById('dup_pm')?.value)||0; let at=parseFloat(document.getElementById('dup_at')?.value)||0; let em=parseFloat(document.getElementById('dup_em')?.value)||0; let roe=pm*at*em; document.getElementById('dup_res').innerHTML = `📊 ROE: ${roe.toFixed(2)}%`; }
+    function npvCalc() { let init=parseAmount(document.getElementById('npv_init')?.value); let cf=document.getElementById('npv_cf')?.value?.split(',').map(Number)||[]; let r=(parseFloat(document.getElementById('npv_rate')?.value)||10)/100; let npv=-init; for(let i=0;i<cf.length;i++) npv+=cf[i]/Math.pow(1+r,i+1); document.getElementById('npv_res').innerHTML = `💰 NPV: ₹${npv.toFixed(2)}`; }
+
+    const tools = [
+        { name: "💰 Income Tax Calculator", icon: "📈", inputs: [{id:"inc_income",p:"Annual Income (₹)"},{id:"inc_80c",p:"80C Deduction"},{id:"inc_80d",p:"80D Insurance"}], calc: "calcIncomeTax", res: "inc_res" },
+        { name: "💸 GST Calculator", icon: "💸", inputs: [{id:"gst_amt",p:"Amount (₹)"},{id:"gst_rate",s:["5","12","18","28"]},{id:"gst_type",s:["exclusive","inclusive"]}], calc: "calcGST", res: "gst_res" },
+        { name: "💰 EMI Calculator", icon: "💰", inputs: [{id:"emi_amt",p:"Loan Amount (₹)"},{id:"emi_rate",p:"Interest Rate (%)"},{id:"emi_tenure",p:"Years"}], calc: "calcEMI", res: "emi_res" },
+        { name: "📈 SIP Calculator", icon: "📈", inputs: [{id:"sip_amt",p:"Monthly SIP (₹)"},{id:"sip_rate",p:"Expected Return (%)"},{id:"sip_years",p:"Years"}], calc: "calcSIP", res: "sip_res" },
+        { name: "🏦 FD Calculator", icon: "🏦", inputs: [{id:"fd_amt",p:"Deposit Amount (₹)"},{id:"fd_rate",p:"Interest Rate (%)"},{id:"fd_years",p:"Years"}], calc: "calcFD", res: "fd_res" },
+        { name: "🏠 HRA Exemption", icon: "🏠", inputs: [{id:"hra_basic",p:"Basic Salary (₹)"},{id:"hra_rec",p:"HRA Received"},{id:"hra_rent",p:"Annual Rent (₹)"}], calc: "calcHRA", res: "hra_res" },
+        { name: "📊 Break-even Analysis", icon: "📊", inputs: [{id:"be_fixed",p:"Fixed Costs (₹)"},{id:"be_var",p:"Variable Cost/Unit"},{id:"be_price",p:"Selling Price/Unit"}], calc: "calcBreakEven", res: "be_res" },
+        { name: "📈 Profit Margin", icon: "📈", inputs: [{id:"pm_cost",p:"Cost Price (₹)"},{id:"pm_price",p:"Selling Price (₹)"}], calc: "calcProfitMargin", res: "pm_res" },
+        { name: "💡 Cash Deposit Advisor", icon: "💡", inputs: [{id:"cash_amt",p:"Cash Amount (₹)"}], calc: "cashDeposit", res: "cash_res" },
+        { name: "💱 Currency Converter", icon: "💱", inputs: [{id:"curr_amt",p:"Amount"},{id:"curr_from",s:["USD","EUR","GBP","INR","AUD","CAD","SGD","AED","JPY","CNY","CHF","NZD","SEK","KRW"]},{id:"curr_to",s:["USD","EUR","GBP","INR","AUD","CAD","SGD","AED","JPY","CNY","CHF","NZD","SEK","KRW"]}], calc: "currencyConvert", res: "curr_res" },
+        { name: "💰 PF Calculator", icon: "💰", inputs: [{id:"pf_sal",p:"Monthly Salary (₹)"}], calc: "pfCalc", res: "pf_res" },
+        { name: "🎁 Gratuity Calculator", icon: "🎁", inputs: [{id:"grat_sal",p:"Last Salary (₹)"},{id:"grat_years",p:"Years of Service"}], calc: "gratuityCalc", res: "grat_res" },
+        { name: "💳 TDS on Salary", icon: "💳", inputs: [{id:"tds_sal",p:"Annual Salary (₹)"},{id:"tds_ded",p:"80C Deductions"}], calc: "tdsSalary", res: "tds_res" },
+        { name: "📦 Reorder Point", icon: "📦", inputs: [{id:"rop_lt",p:"Lead Time (days)"},{id:"rop_demand",p:"Daily Demand"},{id:"rop_safety",p:"Safety Stock"}], calc: "ropCalc", res: "rop_res" },
+        { name: "📊 EOQ Calculator", icon: "📊", inputs: [{id:"eoq_demand",p:"Annual Demand"},{id:"eoq_order",p:"Ordering Cost (₹)"},{id:"eoq_holding",p:"Holding Cost/Unit (₹)"}], calc: "eoqCalc", res: "eoq_res" },
+        { name: "📄 Form 16", icon: "📄", inputs: [{id:"f16_sal",p:"Annual Salary (₹)"},{id:"f16_ded",p:"Deductions"}], calc: "form16", res: "f16_res" },
+        { name: "📅 Advance Tax", icon: "📅", inputs: [{id:"adv_income",p:"Estimated Income (₹)"}], calc: "advanceTax", res: "adv_res" },
+        { name: "📊 DuPont Analysis", icon: "📊", inputs: [{id:"dup_pm",p:"Profit Margin (%)"},{id:"dup_at",p:"Asset Turnover"},{id:"dup_em",p:"Equity Multiplier"}], calc: "duPont", res: "dup_res" },
+        { name: "💰 NPV Calculator", icon: "💰", inputs: [{id:"npv_init",p:"Initial Investment (₹)"},{id:"npv_cf",p:"Cash Flows (comma)"},{id:"npv_rate",p:"Discount Rate (%)"}], calc: "npvCalc", res: "npv_res" }
+    ];
+
+    function shareWhatsApp(resId, name) { let t = document.getElementById(resId)?.innerText || ''; window.open(`https://wa.me/?text=${encodeURIComponent(name + ': ' + t.substring(0,200))}`,'_blank'); }
+    function printTool(name, resId) { let c = document.getElementById(resId)?.innerHTML || ''; let w = window.open('','_blank'); w.document.write(`<html><head><title>${name}</title><style>body{font-family:Arial;padding:20px}</style></head><body><h2>${name}</h2>${c}</body></html>`); w.print(); }
+    window.exportToPDF = function(name, rid) { let content = document.getElementById(rid)?.innerHTML || ''; let w=window.open('','_blank'); w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${name} - CAI Report</title><style>body{font-family:'Times New Roman',Arial;padding:40px;background:white}.header{text-align:center;border-bottom:3px solid #1e3c72;padding:20px}.title{background:#1e3c72;color:white;padding:10px;text-align:center;margin:20px 0}.content{background:#f9f9f9;padding:20px;border-left:4px solid #1e3c72}</style></head><body><div class="header"><h1>🏭 CAI</h1><p>Chartered Accountant Intelligence</p></div><div class="title">${name}</div><div class="content">${content.replace(/<br>/g,'<br>')}</div><div class="footer" style="text-align:center;margin-top:30px;">Generated by CAI Platform | Made in India 🇮🇳</div></body></html>`); w.document.close(); w.print(); };
+
+    window.calcIncomeTax=calcIncomeTax; window.calcGST=calcGST; window.calcEMI=calcEMI; window.calcSIP=calcSIP; window.calcFD=calcFD;
+    window.calcHRA=calcHRA; window.calcBreakEven=calcBreakEven; window.calcProfitMargin=calcProfitMargin; window.cashDeposit=cashDeposit;
+    window.currencyConvert=currencyConvert; window.pfCalc=pfCalc; window.gratuityCalc=gratuityCalc; window.tdsSalary=tdsSalary;
+    window.ropCalc=ropCalc; window.eoqCalc=eoqCalc; window.form16=form16; window.advanceTax=advanceTax;
+    window.duPont=duPont; window.npvCalc=npvCalc;
+    window.shareWhatsApp=shareWhatsApp; window.printTool=printTool;
+
+    function renderTools() {
+        let container = document.getElementById('toolsContainer');
+        let search = document.getElementById('searchTools')?.value.toLowerCase() || '';
+        let html = '<div class="tools-grid">';
+        for(let t of tools) {
+            if(search && !t.name.toLowerCase().includes(search)) continue;
+            let inputsHtml = '';
+            for(let inp of t.inputs) {
+                if(inp.s) inputsHtml += `<select id="${inp.id}">${inp.s.map(o=>`<option>${o}</option>`).join('')}</select>`;
+                else inputsHtml += `<input type="text" id="${inp.id}" placeholder="${inp.p}">`;
+            }
+            html += `<div class="tool">
+                <h3>${t.icon} ${t.name}</h3>
+                <div class="tool-inputs">${inputsHtml}</div>
+                <div class="tool-buttons">
+                    <button class="btn-view" onclick="${t.calc}()">📊 Calculate</button>
+                    <button class="btn-pdf" onclick="exportToPDF('${t.name}', '${t.res}')">📄 Download PDF</button>
+                </div>
+                <div class="tool-result" id="${t.res}">Click Calculate</div>
+                <div class="share-row">
+                    <button class="share-wa" onclick="shareWhatsApp('${t.res}','${t.name}')">📱 WhatsApp</button>
+                    <button class="share-print" onclick="printTool('${t.name}','${t.res}')">🖨️ Print</button>
+                </div>
+            </div>`;
+        }
+        html += `</div>`;
+        container.innerHTML = html;
+        
+        // Add animation to tools
+        let toolsElements = document.querySelectorAll('.tool');
+        toolsElements.forEach((tool, idx) => {
+            tool.style.animationDelay = `${idx * 0.05}s`;
+        });
+    }
+
+    document.getElementById('searchTools')?.addEventListener('input', () => renderTools());
+    buildDropdown();
+    renderTools();
+    updateStats();
 </script>
 </body>
 </html>
